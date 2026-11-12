@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>솜니아: 드림 아카데미 (Somnia: Dream Academy)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Jua&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-night: #141226;
+      --bg-plum: #231d42;
+      --gold-accent: #f6d365;
+      --lavender-soft: #d8b4fe;
+      --devotion-white: #f8fafc;
+      --revolution-crimson: #fb7185;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: var(--bg-night);
+      color: #f3f0ff;
+      overflow-x: hidden;
+      user-select: none;
+    }
+
+    .font-title {
+      font-family: 'Jua', sans-serif;
+    }
+
+    .font-story {
+      font-family: 'Gowun Batang', serif;
+    }
+
+    /* 쿠킹덤 스타일 금장 프레임 & 몽글몽글 카드 */
+    .crk-panel {
+      background: linear-gradient(165deg, rgba(35, 29, 66, 0.94) 0%, rgba(20, 18, 38, 0.97) 100%);
+      border: 2px solid #d4af37;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.65), inset 0 0 18px rgba(212, 175, 55, 0.18);
+      border-radius: 1.25rem;
+    }
+
+    .crk-button {
+      background: linear-gradient(180deg, #4c3b8a 0%, #2e2259 100%);
+      border: 2px solid #e2c060;
+      box-shadow: 0 4px 0 #1a1236, 0 6px 14px rgba(0,0,0,0.45);
+      transition: all 0.15s ease;
+    }
+
+    .crk-button:hover {
+      transform: translateY(-2px);
+      background: linear-gradient(180deg, #5f4ba8 0%, #3a2b6e 100%);
+      box-shadow: 0 6px 0 #1a1236, 0 8px 18px rgba(246, 211, 101, 0.3);
+    }
+
+    .crk-button:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #1a1236;
+    }
+
+    /* 캐릭터 스탠딩 부유 애니메이션 */
+    @keyframes floatSprite {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-7px); }
+    }
+
+    .sprite-float {
+      animation: floatSprite 3.6s ease-in-out infinite;
+    }
+
+    /* 3시 33분 눈물비 & 글리치 효과 */
+    @keyframes rainFall {
+      0% { background-position: 0 0; }
+      100% { background-position: 20px 400px; }
+    }
+
+    .tear-rain-overlay {
+      background-image: linear-gradient(to bottom, rgba(147, 197, 253, 0) 0%, rgba(147, 197, 253, 0.35) 50%, rgba(147, 197, 253, 0) 100%);
+      background-size: 2px 90px;
+      animation: rainFall 0.7s linear infinite;
+    }
+
+    /* 커스텀 스크롤바 */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: rgba(20, 18, 38, 0.5); }
+    ::-webkit-scrollbar-thumb { background: #8b5cf6; border-radius: 999px; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between relative">
+
+  <!-- 배경 캔버스 (별빛 & 구름 파티클) -->
+  <div id="bg-layer" class="fixed inset-0 pointer-events-none z-0 transition-all duration-1000"
+       style="background: radial-gradient(circle at 50% 25%, #342966 0%, #17142b 65%, #0c0a17 100%);">
+    <div id="weather-overlay" class="absolute inset-0 opacity-0 transition-opacity duration-700"></div>
+  </div>
+
+  <!-- ================= 타이틀 화면 ================= -->
+  <div id="title-screen" class="relative z-20 flex-1 flex flex-col items-center justify-center p-4 text-center">
+    <div class="crk-panel max-w-2xl w-full p-8 sm:p-10 relative overflow-hidden">
+      <!-- 상단 장식 리본 -->
+      <div class="inline-block px-4 py-1 mb-4 rounded-full bg-purple-900/80 border border-amber-300/60 text-amber-200 text-xs sm:text-sm tracking-widest font-semibold">
+        ☁️ 왕립 대방직 학원 [그랜드 퀼트] 연대기
+      </div>
+
+      <h1 class="font-title text-4xl sm:text-6xl text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-amber-300 to-purple-300 drop-shadow-md mb-3">
+        솜니아: 드림 아카데미
+      </h1>
+      <p class="font-story text-purple-200 text-sm sm:text-base mb-8 leading-relaxed">
+        "우리는 주인의 잊혀진 꿈에서 태어난 축복받은 솜 요정들.<br/>
+        9학년의 매듭을 모두 엮는 날, 우리는 별이 되어 인간 세상으로 나아간다."
+      </p>
+
+      <!-- 타이틀 캐릭터 프리뷰 바 -->
+      <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-8 bg-black/30 p-3 rounded-2xl border border-white/10">
+        <div class="flex flex-col items-center">
+          <div id="preview-lavender" class="w-14 h-16"></div>
+          <span class="text-xs text-purple-200 mt-1 font-bold">라벤더</span>
+        </div>
+        <div class="flex flex-col items-center">
+          <div id="preview-milktea" class="w-14 h-16"></div>
+          <span class="text-xs text-amber-200 mt-1 font-bold">밀크티</span>
+        </div>
+        <div class="flex flex-col items-center">
+          <div id="preview-peppermint" class="w-14 h-16"></div>
+          <span class="text-xs text-emerald-200 mt-1 font-bold">페퍼민트</span>
+        </div>
+        <div class="flex flex-col items-center">
+          <div id="preview-ink" class="w-14 h-16"></div>
+          <span class="text-xs text-slate-300 mt-1 font-bold">잉크</span>
+        </div>
+        <div class="flex flex-col items-center">
+          <div id="preview-camomile" class="w-14 h-16"></div>
+          <span class="text-xs text-yellow-200 mt-1 font-bold">캐모마일</span>
+        </div>
+        <div class="flex flex-col items-center">
+          <div id="preview-belladonna" class="w-14 h-16"></div>
+          <span class="text-xs text-rose-300 mt-1 font-bold">벨라돈나</span>
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <button onclick="startGame(0)" class="crk-button px-8 py-4 rounded-2xl font-title text-xl text-amber-100 flex items-center justify-center gap-2 cursor-pointer">
+          <span>✨ 1학년 입학식부터 시작</span>
+        </button>
+        <button onclick="toggleChapterModal()" class="px-6 py-4 rounded-2xl bg-slate-800/80 hover:bg-slate-700 border border-purple-400/50 text-purple-100 font-bold text-sm sm:text-base transition cursor-pointer">
+          📖 학년별 챕터 점프 (테스트용)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 메인 게임 플레이 화면 ================= -->
+  <div id="game-screen" class="hidden relative z-10 flex-1 flex flex-col justify-between max-w-5xl w-full mx-auto p-3 sm:p-5">
+
+    <!-- 상단 HUD: 학년, 챕터명, 3대 게이지, 유틸 버튼 -->
+    <header class="crk-panel p-3 sm:p-4 mb-2">
+      <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-amber-400/25">
+        <div class="flex items-center gap-2 sm:gap-3">
+          <span id="hud-grade" class="px-3 py-1 rounded-full bg-amber-400 text-slate-950 font-title text-sm sm:text-base shadow">
+            1학년 (견습반)
+          </span>
+          <div>
+            <div id="hud-location" class="text-[11px] text-purple-300">📍 중앙 본관 대강당</div>
+            <h2 id="hud-chapter" class="font-bold text-sm sm:text-lg text-amber-100">제1장. 텅 빈 눈동자와 은색 옷핀</h2>
+          </div>
+        </div>
+
+        <!-- 컨트롤 버튼 그룹 -->
+        <div class="flex items-center gap-1.5 sm:gap-2">
+          <button id="btn-sound" onclick="toggleAudio()" class="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-purple-950/90 border border-amber-300/40 text-xs sm:text-sm hover:bg-purple-800 transition cursor-pointer" title="오르골 BGM 켜기/끄기">
+            🔇 사운드 OFF
+          </button>
+          <button onclick="toggleBacklog()" class="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-purple-950/90 border border-purple-400/40 text-xs sm:text-sm hover:bg-purple-800 transition cursor-pointer">
+            📜 대화기록
+          </button>
+          <button onclick="toggleChapterModal()" class="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-purple-950/90 border border-purple-400/40 text-xs sm:text-sm hover:bg-purple-800 transition cursor-pointer">
+            ⏭️ 학년이동
+          </button>
+        </div>
+      </div>
+
+      <!-- 3대 핵심 성향 & 공명 게이지 -->
+      <div class="grid grid-cols-3 gap-2 sm:gap-4 pt-3 text-xs">
+        <!-- 주인 공명도 -->
+        <div class="bg-black/35 p-2 rounded-xl border border-purple-400/30">
+          <div class="flex justify-between mb-1">
+            <span class="text-purple-200 font-bold">💜 주인 공명도</span>
+            <span id="val-resonance" class="text-purple-100 font-bold">20%</span>
+          </div>
+          <div class="w-full h-2 bg-slate-900 rounded-full overflow-hidden">
+            <div id="bar-resonance" class="h-full bg-gradient-to-r from-purple-500 to-fuchsia-400 transition-all duration-500" style="width: 20%"></div>
+          </div>
+        </div>
+
+        <!-- 헌신파 (캐모마일) -->
+        <div class="bg-black/35 p-2 rounded-xl border border-amber-200/30">
+          <div class="flex justify-between mb-1">
+            <span class="text-amber-100 font-bold">🤍 헌신 (순백단)</span>
+            <span id="val-devotion" class="text-amber-100 font-bold">10</span>
+          </div>
+          <div class="w-full h-2 bg-slate-900 rounded-full overflow-hidden">
+            <div id="bar-devotion" class="h-full bg-gradient-to-r from-amber-200 to-yellow-400 transition-all duration-500" style="width: 20%"></div>
+          </div>
+        </div>
+
+        <!-- 혁명파 (벨라돈나) -->
+        <div class="bg-black/35 p-2 rounded-xl border border-rose-400/30">
+          <div class="flex justify-between mb-1">
+            <span class="text-rose-200 font-bold">🖤 혁명 (밤의교단)</span>
+            <span id="val-revolution" class="text-rose-200 font-bold">10</span>
+          </div>
+          <div class="w-full h-2 bg-slate-900 rounded-full overflow-hidden">
+            <div id="bar-revolution" class="h-full bg-gradient-to-r from-rose-500 to-purple-600 transition-all duration-500" style="width: 20%"></div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- 중앙 무대: 스탠딩 캐릭터 일러스트 영역 -->
+    <main class="relative flex-1 flex items-end justify-center min-h-[260px] sm:min-h-[330px] my-1 overflow-hidden">
+      <!-- 왼쪽 서브 캐릭터 -->
+      <div id="stage-left" class="w-36 sm:w-48 transition-all duration-500 transform translate-y-2 opacity-0"></div>
+      <!-- 중앙 메인 화자 캐릭터 -->
+      <div id="stage-center" class="w-44 sm:w-56 transition-all duration-500 transform translate-y-1 z-10 sprite-float"></div>
+      <!-- 오른쪽 서브 캐릭터 -->
+      <div id="stage-right" class="w-36 sm:w-48 transition-all duration-500 transform translate-y-2 opacity-0"></div>
+
+      <!-- 게이지 변동 알림 토스트 -->
+      <div id="stat-toast" class="absolute top-3 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-slate-900/95 border border-amber-300 text-amber-200 text-xs sm:text-sm font-bold shadow-lg opacity-0 transition-opacity duration-300 pointer-events-none z-30">
+      </div>
+    </main>
+
+    <!-- 하단 대화창 & 선택지 영역 -->
+    <footer class="relative z-20">
+      <!-- 선택지 오버레이 패널 -->
+      <div id="choice-container" class="hidden flex-col gap-2.5 mb-3 max-w-2xl mx-auto">
+        <!-- JS로 선택지 버튼 동적 생성 -->
+      </div>
+
+      <!-- 비주얼 노벨 대사 박스 -->
+      <div id="dialogue-box" onclick="nextDialogue()" class="crk-panel p-5 sm:p-6 cursor-pointer relative min-h-[155px] sm:min-h-[175px] flex flex-col justify-between hover:border-amber-200 transition">
+        <!-- 화자 이름표 & 기숙사/소속 뱃지 -->
+        <div class="flex items-center gap-2 mb-2">
+          <span id="speaker-name" class="font-title text-lg sm:text-xl px-4 py-0.5 rounded-xl bg-gradient-to-r from-amber-300 to-amber-500 text-slate-950 shadow">
+            나레이션
+          </span>
+          <span id="speaker-tag" class="text-xs px-2.5 py-0.5 rounded-lg bg-white/10 text-purple-200 border border-white/15">
+            솜니아 공국
+          </span>
+        </div>
+
+        <!-- 대사 텍스트 출력 영역 -->
+        <p id="dialogue-text" class="font-story text-base sm:text-xl text-slate-100 leading-relaxed tracking-wide">
+          ...
+        </p>
+
+        <!-- 다음 진행 안내 아이콘 -->
+        <div id="next-indicator" class="self-end text-xs text-amber-300/90 flex items-center gap-1 animate-pulse mt-2">
+          <span>클릭 또는 Space로 계속</span>
+          <span>▼</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ================= 엔딩 결과 모달 ================= -->
+  <div id="ending-modal" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="crk-panel max-w-xl w-full p-6 sm:p-8 text-center">
+      <div id="ending-badge" class="inline-block px-4 py-1 rounded-full text-xs font-bold mb-3 bg-amber-300 text-slate-950">
+        9학년 졸업식 엔딩 달성
+      </div>
+      <h2 id="ending-title" class="font-title text-3xl sm:text-4xl text-amber-200 mb-4">
+        엔딩 제목
+      </h2>
+      <p id="ending-desc" class="font-story text-sm sm:text-base text-purple-100 leading-relaxed mb-6 text-left bg-black/40 p-4 rounded-xl border border-white/10">
+        엔딩 설명
+      </p>
+      <div class="grid grid-cols-3 gap-2 mb-6 text-xs bg-slate-900/80 p-3 rounded-xl">
+        <div>💜 공명도: <strong id="end-res" class="text-purple-300">0%</strong></div>
+        <div>🤍 헌신도: <strong id="end-dev" class="text-amber-200">0</strong></div>
+        <div>🖤 혁명도: <strong id="end-rev" class="text-rose-300">0</strong></div>
+      </div>
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <button onclick="restartToTitle()" class="crk-button px-6 py-3 rounded-xl font-title text-lg text-amber-100 cursor-pointer">
+          🔄 처음으로 돌아가기
+        </button>
+        <button onclick="closeEndingAndJump()" class="px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-purple-400/50 text-sm font-bold cursor-pointer">
+          📖 다른 학년/분기 테스트
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 학년별 챕터 점프 모달 ================= -->
+  <div id="chapter-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="crk-panel max-w-lg w-full p-6">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="font-title text-2xl text-amber-200">📖 학년별 스토리 챕터 이동</h3>
+        <button onclick="toggleChapterModal()" class="text-slate-400 hover:text-white text-xl font-bold cursor-pointer">✕</button>
+      </div>
+      <p class="text-xs text-purple-200 mb-4">
+        디렉터 테스트용 메뉴입니다. 1학년 입학부터 9학년 졸업식까지 원하는 시점으로 바로 이동할 수 있습니다.
+      </p>
+      <div id="chapter-list" class="flex flex-col gap-2 max-h-80 overflow-y-auto pr-1">
+        <!-- JS로 챕터 버튼 생성 -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 대화 기록(백로그) 모달 ================= -->
+  <div id="backlog-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="crk-panel max-w-2xl w-full p-6 flex flex-col max-h-[80vh]">
+      <div class="flex justify-between items-center mb-3 pb-2 border-b border-white/15">
+        <h3 class="font-title text-xl text-amber-200">📜 지금까지의 대화 기록</h3>
+        <button onclick="toggleBacklog()" class="text-slate-400 hover:text-white text-xl font-bold cursor-pointer">✕</button>
+      </div>
+      <div id="backlog-content" class="flex-1 overflow-y-auto space-y-3 pr-2 text-sm">
+        <!-- JS로 기록 렌더링 -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==========================================
+    // 1. SVG 캐릭터 일러스트 생성기 (쿠킹덤 2.5등신 인형풍)
+    // ==========================================
+    const CHARACTER_SVGS = {
+      lavender: `
+        <svg viewBox="0 0 200 240" class="w-full h-full drop-shadow-[0_8px_12px_rgba(0,0,0,0.6)]">
+          <!-- 거대한 은색 옷핀 무기 -->
+          <g transform="translate(148, 35) rotate(12)">
+            <rect x="0" y="0" width="14" height="165" rx="7" fill="none" stroke="#cbd5e1" stroke-width="5"/>
+            <circle cx="7" cy="158" r="10" fill="none" stroke="#94a3b8" stroke-width="5"/>
+            <path d="M-2,12 Q7,-6 16,12" fill="#e2e8f0" stroke="#64748b" stroke-width="2"/>
+          </g>
+          <!-- 망토 & 파자마 교복 -->
+          <path d="M55,140 Q100,125 145,140 L160,215 Q100,228 40,215 Z" fill="#6d28d9" stroke="#f6d365" stroke-width="2.5"/>
+          <path d="M68,142 L132,142 L140,210 L60,210 Z" fill="#f5f3ff"/>
+          <!-- 관절 스티치 실밥 -->
+          <line x1="92" y1="165" x2="108" y2="165" stroke="#a78bfa" stroke-width="2" stroke-dasharray="3,3"/>
+          <!-- 몽글몽글 연보라 솜 머리카락 (뒷머리) -->
+          <circle cx="62" cy="88" r="32" fill="#c084fc"/>
+          <circle cx="138" cy="88" r="32" fill="#c084fc"/>
+          <circle cx="100" cy="62" r="42" fill="#d8b4fe"/>
+          <!-- 광목천 얼굴 -->
+          <ellipse cx="100" cy="96" rx="42" ry="38" fill="#fffbeb" stroke="#e9d5ff" stroke-width="2"/>
+          <!-- 앞머리 솜 구름 -->
+          <path d="M56,86 Q72,56 100,72 Q128,56 144,86 Q125,76 100,82 Q75,76 56,86 Z" fill="#e9d5ff"/>
+          <!-- 텅 빈 안개 눈동자 (떡밥!) -->
+          <circle cx="83" cy="98" r="10" fill="#581c87"/>
+          <circle cx="83" cy="98" r="6" fill="#a855f7" opacity="0.65"/>
+          <circle cx="80" cy="94" r="2.5" fill="#ffffff" opacity="0.7"/>
+          <circle cx="117" cy="98" r="10" fill="#581c87"/>
+          <circle cx="117" cy="98" r="6" fill="#a855f7" opacity="0.65"/>
+          <circle cx="114" cy="94" r="2.5" fill="#ffffff" opacity="0.7"/>
+          <!-- 왼쪽 눈 밑 십자(+) 스티치 -->
+          <path d="M72,111 L78,117 M78,111 L72,117" stroke="#7e22ce" stroke-width="2" stroke-linecap="round"/>
+          <!-- 입 & 목 리본 -->
+          <path d="M95,114 Q100,119 105,114" fill="none" stroke="#7e22ce" stroke-width="2" stroke-linecap="round"/>
+          <polygon points="86,136 100,143 86,150" fill="#a855f7"/>
+          <polygon points="114,136 100,143 114,150" fill="#a855f7"/>
+          <circle cx="100" cy="143" r="4" fill="#fde047"/>
+        </svg>`,
+
+      milktea: `
+        <svg viewBox="0 0 200 240" class="w-full h-full drop-shadow-[0_8px_12px_rgba(0,0,0,0.6)]">
+          <!-- 티스푼 지팡이 -->
+          <g transform="translate(36, 30) rotate(-10)">
+            <rect x="8" y="32" width="6" height="165" rx="3" fill="#fcd34d" stroke="#b45309" stroke-width="1.5"/>
+            <ellipse cx="11" cy="20" rx="13" ry="20" fill="#fef3c7" stroke="#d97706" stroke-width="2.5"/>
+          </g>
+          <!-- 양갈래 베이지 솜 머리 -->
+          <circle cx="48" cy="105" r="24" fill="#e7d3b5"/>
+          <circle cx="152" cy="105" r="24" fill="#e7d3b5"/>
+          <circle cx="100" cy="68" r="42" fill="#f3e5d0"/>
+          <!-- 루나 앞치마 교복 -->
+          <path d="M60,140 L140,140 L152,215 L48,215 Z" fill="#92400e" stroke="#fde68a" stroke-width="2"/>
+          <path d="M74,140 L126,140 L132,215 L68,215 Z" fill="#fffbeb"/>
+          <!-- 얼굴 -->
+          <ellipse cx="100" cy="96" rx="41" ry="37" fill="#fffbeb"/>
+          <path d="M58,85 Q100,52 142,85 Q120,74 100,78 Q80,74 58,85 Z" fill="#e7d3b5"/>
+          <!-- 찻잔 문양 눈동자 -->
+          <circle cx="83" cy="98" r="10" fill="#78350f"/>
+          <path d="M78,98 Q83,104 88,98 Z" fill="#fde68a"/>
+          <circle cx="117" cy="98" r="10" fill="#78350f"/>
+          <path d="M112,98 Q117,104 122,98 Z" fill="#fde68a"/>
+          <!-- 활짝 웃는 입 -->
+          <path d="M93,112 Q100,122 107,112 Z" fill="#f43f5e"/>
+        </svg>`,
+
+      peppermint: `
+        <svg viewBox="0 0 200 240" class="w-full h-full drop-shadow-[0_8px_12px_rgba(0,0,0,0.6)]">
+          <!-- 제도용 컴퍼스 무기 -->
+          <g transform="translate(150, 32) rotate(8)">
+            <circle cx="10" cy="10" r="8" fill="#fbbf24" stroke="#78350f" stroke-width="2"/>
+            <line x1="8" y1="16" x2="-4" y2="165" stroke="#94a3b8" stroke-width="5" stroke-linecap="round"/>
+            <line x1="12" y1="16" x2="24" y2="165" stroke="#cbd5e1" stroke-width="5" stroke-linecap="round"/>
+          </g>
+          <!-- 솔라리스 제복 -->
+          <path d="M62,140 L138,140 L146,215 L54,215 Z" fill="#065f46" stroke="#fcd34d" stroke-width="2.5"/>
+          <!-- 민트색 단정한 솜 머리 -->
+          <circle cx="100" cy="68" r="42" fill="#6ee7b7"/>
+          <ellipse cx="100" cy="96" rx="40" ry="37" fill="#fffbeb"/>
+          <path d="M58,84 L85,66 L102,80 L122,64 L142,84 Z" fill="#34d399"/>
+          <!-- 십자선(+) 눈동자 -->
+          <circle cx="83" cy="98" r="9.5" fill="#064e3b"/>
+          <path d="M83,91 L83,105 M76,98 L90,98" stroke="#a7f3d0" stroke-width="1.8"/>
+          <circle cx="117" cy="98" r="9.5" fill="#064e3b"/>
+          <path d="M117,91 L117,105 M110,98 L124,98" stroke="#a7f3d0" stroke-width="1.8"/>
+          <!-- 단추 외알안경 (모노클) -->
+          <circle cx="117" cy="98" r="14" fill="rgba(255,255,255,0.18)" stroke="#fbbf24" stroke-width="2.5"/>
+          <path d="M131,98 Q142,115 134,135" fill="none" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="2,2"/>
+          <!-- 진지한 일자 입 -->
+          <line x1="94" y1="115" x2="106" y2="115" stroke="#065f46" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>`,
+
+      ink: `
+        <svg viewBox="0 0 200 240" class="w-full h-full drop-shadow-[0_8px_12px_rgba(0,0,0,0.6)]">
+          <!-- 재단 가위 무기 -->
+          <g transform="translate(34, 45) rotate(-18)">
+            <circle cx="6" cy="135" r="11" fill="none" stroke="#94a3b8" stroke-width="4"/>
+            <circle cx="24" cy="135" r="11" fill="none" stroke="#94a3b8" stroke-width="4"/>
+            <polygon points="8,125 22,125 15,15" fill="#e2e8f0" stroke="#475569" stroke-width="2"/>
+          </g>
+          <!-- 녹턴 망토 제복 -->
+          <path d="M56,140 L144,140 L155,218 L45,218 Z" fill="#1e1b4b" stroke="#818cf8" stroke-width="2"/>
+          <!-- 새까만 실타래 단발머리 -->
+          <path d="M54,75 Q100,32 146,75 L150,130 L50,130 Z" fill="#1e293b"/>
+          <ellipse cx="100" cy="96" rx="40" ry="36" fill="#f8fafc"/>
+          <!-- 한쪽 눈 가리는 앞머리 -->
+          <path d="M56,74 Q95,62 144,78 L112,112 L86,84 L58,108 Z" fill="#0f172a"/>
+          <!-- 미로 문양 오른쪽 눈 -->
+          <circle cx="83" cy="98" r="9.5" fill="#312e81"/>
+          <circle cx="83" cy="98" r="5" fill="none" stroke="#c7d2fe" stroke-width="1.5"/>
+          <circle cx="83" cy="98" r="2" fill="#c7d2fe"/>
+          <!-- 눈 밑 스티치 -->
+          <line x1="76" y1="112" x2="90" y2="112" stroke="#475569" stroke-width="2" stroke-dasharray="2,2"/>
+          <path d="M96,116 L105,114" stroke="#334155" stroke-width="2" stroke-linecap="round"/>
+        </svg>`,
+
+      camomile: `
+        <svg viewBox="0 0 200 240" class="w-full h-full drop-shadow-[0_8px_12px_rgba(0,0,0,0.6)]">
+          <!-- 순백의 학생회장 망토 & 금장 -->
+          <path d="M50,138 Q100,122 150,138 L165,220 L35,220 Z" fill="#ffffff" stroke="#f59e0b" stroke-width="3"/>
+          <path d="M72,138 L128,138 L134,220 L66,220 Z" fill="#fef3c7"/>
+          <!-- 금빛 솜 머리카락 -->
+          <circle cx="100" cy="66" r="44" fill="#fde047"/>
+          <circle cx="62" cy="92" r="26" fill="#facc15"/>
+          <circle cx="138" cy="92" r="26" fill="#facc15"/>
+          <ellipse cx="100" cy="96" rx="41" ry="37" fill="#fffbeb"/>
+          <path d="M58,84 Q100,50 142,84 Q118,74 100,80 Q82,74 58,84 Z" fill="#fef08a"/>
+          <!-- 영웅의 검 눈동자 -->
+          <circle cx="83" cy="98" r="10" fill="#b45309"/>
+          <path d="M83,90 L83,106 M79,95 L87,95" stroke="#fef08a" stroke-width="2.2"/>
+          <circle cx="117" cy="98" r="10" fill="#b45309"/>
+          <path d="M117,90 L117,106 M113,95 L121,95" stroke="#fef08a" stroke-width="2.2"/>
+          <!-- 온화한 미소 -->
+          <path d="M93,113 Q100,119 107,113" fill="none" stroke="#b45309" stroke-width="2" stroke-linecap="round"/>
+        </svg>`,
+
+      belladonna: `
+        <svg viewBox="0 0 200 240" class="w-full h-full drop-shadow-[0_8px_12px_rgba(0,0,0,0.6)]">
+          <!-- 양호교사 코트 & 떡밥의 '붉은 실밥' 소매 -->
+          <path d="M52,138 L148,138 L160,220 L40,220 Z" fill="#3b0764" stroke="#f43f5e" stroke-width="2.5"/>
+          <path d="M74,138 L126,138 L130,220 L70,220 Z" fill="#f8fafc"/>
+          <!-- 소매 끝 선명한 붉은 실밥 (핵심 떡밥!) -->
+          <path d="M44,195 L62,195" stroke="#f43f5e" stroke-width="3.5" stroke-dasharray="4,3"/>
+          <path d="M48,202 L58,188" stroke="#fb7185" stroke-width="2"/>
+          <!-- 짙은 보라색 틀어올린 실타래 머리 -->
+          <circle cx="100" cy="42" r="22" fill="#581c87"/>
+          <circle cx="100" cy="72" r="42" fill="#6b21a8"/>
+          <ellipse cx="100" cy="96" rx="40" ry="37" fill="#fdf4ff"/>
+          <path d="M58,84 Q100,56 142,84 Q120,76 100,88 Q80,76 58,84 Z" fill="#4c1d95"/>
+          <!-- 나른한 반달 눈 & 초승달 문양 -->
+          <circle cx="83" cy="99" r="9.5" fill="#881337"/>
+          <path d="M80,94 A5,5 0 1,0 86,103 A3.5,3.5 0 1,1 80,94 Z" fill="#fda4af"/>
+          <circle cx="117" cy="99" r="9.5" fill="#881337"/>
+          <path d="M114,94 A5,5 0 1,0 120,103 A3.5,3.5 0 1,1 114,94 Z" fill="#fda4af"/>
+          <!-- 묘한 미소 -->
+          <path d="M93,114 Q100,120 108,113" fill="none" stroke="#9f1239" stroke-width="2" stroke-linecap="round"/>
+        </svg>`
+    };
+
+    // 타이틀 화면에 미니 프리뷰 렌더링
+    window.addEventListener('DOMContentLoaded', () => {
+      Object.keys(CHARACTER_SVGS).forEach(key => {
+        const el = document.getElementById(`preview-${key}`);
+        if (el) el.innerHTML = CHARACTER_SVGS[key];
+      });
+      renderChapterList();
+    });
+
+    // ==========================================
+    // 2. Web Audio API 오르골 BGM & 효과음 엔진
+    // ==========================================
+    let audioCtx = null;
+    let isAudioOn = false;
+    let bgmInterval = null;
+
+    const MUSIC_BOX_NOTES = [
+      523.25, 659.25, 783.99, 987.77, 783.99, 659.25, // Cmaj7 아르페지오
+      493.88, 587.33, 739.99, 880.00, 739.99, 587.33, // Bm7
+      440.00, 523.25, 659.25, 783.99, 659.25, 523.25, // Am7
+      392.00, 493.88, 587.33, 783.99, 587.33, 493.88  // G6
+    ];
+    let noteIdx = 0;
+
+    function playTone(freq, duration = 0.6, vol = 0.04, type = 'sine') {
+      if (!isAudioOn || !audioCtx) return;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + duration);
+    }
+
+    function toggleAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      isAudioOn = !isAudioOn;
+      const btn = document.getElementById('btn-sound');
+      if (isAudioOn) {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        btn.innerHTML = '🔊 오르골 ON';
+        btn.classList.add('border-amber-300', 'text-amber-200');
+        playTone(880, 0.25, 0.06);
+        bgmInterval = setInterval(() => {
+          playTone(MUSIC_BOX_NOTES[noteIdx % MUSIC_BOX_NOTES.length], 1.1, 0.035, 'sine');
+          noteIdx++;
+        }, 520);
+      } else {
+        btn.innerHTML = '🔇 사운드 OFF';
+        btn.classList.remove('border-amber-300', 'text-amber-200');
+        clearInterval(bgmInterval);
+      }
+    }
+
+    // ==========================================
+    // 3. 1학년 ~ 9학년 임시 풀스토리 시나리오 데이터
+    // ==========================================
+    const SCENES = [
+      // --- [1학년: 입학과 기숙사 배정] ---
+      {
+        id: 'g1_start',
+        grade: '1학년 (견습반)',
+        chapter: '제1장. 텅 빈 눈동자와 은색 옷핀',
+        location: '📍 중앙 본관 대강당',
+        bg: 'radial-gradient(circle at 50% 25%, #3b2d71 0%, #17142b 70%, #0b0914 100%)',
+        weather: 'none',
+        lines: [
+          { speaker: '나레이션', tag: '주인력 36년 · 개벽의 밤 직후', center: null, text: '일 년에 단 한 번, 베개 속 하늘에 하얀 목화솜 눈이 내리는 날. 왕립 대방직 학원 <그랜드 퀼트>의 1학년 입학식이 시작되었다.' },
+          { speaker: '밀크티', tag: '루나 기숙사 1학년', center: 'milktea', left: 'lavender', text: '안녕! 난 밀크티야! 어제 주인님이 다이어트한다고 저녁 굶고 주무셔서 태어났어! 넌 어떤 꿈에서 태어났어?' },
+          { speaker: '라벤더', tag: '주인공 · 신입생', center: 'lavender', left: 'milktea', text: '나, 나는 라벤더야. 어젯밤 주인님이 뿌린 라벤더 미스트 향기에서 태어났는데…….' },
+          { speaker: '밀크티', tag: '루나 기숙사 1학년', center: 'milktea', left: 'lavender', text: '어? 너 눈동자에 아무런 꿈 문양이 없네?! 게다가 라벤더 향 말고…… 주인님 방엔 없는 낯선 향수 냄새도 섞여 나!' },
+          { speaker: '캐모마일', tag: '루나 9학년 · 총학생회장', center: 'camomile', right: 'belladonna', text: '신입생 여러분, 환영합니다. 9학년 졸업식의 영광스러운 날이 오면, 여러분은 주인님의 가장 빛나는 별이 되어 인간 세상으로 나아갈 것입니다.' },
+          { speaker: '벨라돈나', tag: '녹턴 사감 · 양호교사', center: 'belladonna', left: 'camomile', text: '(나른하게 박수를 치며 미소 짓는다. 그녀의 하얀 가운 소매 끝에는 이 베개의 것이 아닌 선명한 붉은 실밥이 삐져나와 있다.)' },
+          { speaker: '페퍼민트', tag: '솔라리스 기숙사 1학년', center: 'peppermint', right: 'ink', text: '흥, 드림캐처의 회전 각도가 1.4도 기울어졌군. 하지만 내 100점 만점 기하학 파동이라면 오차 0.02% 이내로 완벽히 배정될 거야.' },
+          { speaker: '잉크', tag: '녹턴 기숙사 1학년', center: 'ink', left: 'peppermint', text: '……시끄러워. 다음은 저 텅 빈 눈동자 차례인가.' }
+        ],
+        weatherTriggerAtLine: 8,
+        afterLines: [
+          { speaker: '시스템 경고', tag: '시각: 새벽 3시 33분', center: 'lavender', weather: 'rain', text: '끼이익— 땡! 거대 시계바늘이 새벽 3시 33분에서 멈춰 섰다! 천장이 갈라지며 베개 밖 현실 주인의 억눌린 흐느낌 소리가 차가운 눈물비가 되어 쏟아진다!' },
+          { speaker: '라벤더', tag: '주인공 · 감정 공명 발동', center: 'lavender', weather: 'rain', text: '흑…… 너무 아파! 주인님이 혼자서 너무 외롭고 무서워서 울고 있어……! 내가 위로해 줘야 해!' },
+          { speaker: '나레이션', tag: '기숙사 배정 완료', center: 'lavender', weather: 'none', text: '은색 옷핀에서 뿜어져 나온 연보라색 폭풍이 눈물비를 증발시켰다! 드림캐처가 외쳤다— "제피르(Zephyr)!"' }
+        ],
+        choice: {
+          prompt: '입학식 소동 직후, 누구의 시선이 가장 신경 쓰이나요?',
+          options: [
+            { text: '걱정스럽게 나를 바라보던 총학생회장 캐모마일에게 인사한다.', res: 5, dev: 15, rev: 0, reply: '캐모마일은 다정하게 웃으며 네 머리의 보풀을 털어주었다. "무슨 일이 생기면 언제든 학생회실로 오렴, 라벤더."' },
+            { text: '흥미롭다는 듯 웃던 벨라돈나 선생의 소매 끝 붉은 실밥을 유심히 본다.', res: 5, dev: 0, rev: 15, reply: '벨라돈나가 윙크하며 속삭였다. "남다른 눈을 가졌구나, 꼬마 아가씨. 비밀이 생기면 양호실로 놀러 오렴."' },
+            { text: '눈물비 속에서 느꼈던 현실 주인의 슬픈 감정에 집중한다.', res: 15, dev: 5, rev: 5, reply: '네 안개 눈동자가 은은하게 빛나며 주인의 심장 박동과 깊게 공명했다.' }
+          ]
+        }
+      },
+
+      // --- [3학년: 초등 과정 수료 & 지하 심연의 비밀] ---
+      {
+        id: 'g3_abyss',
+        grade: '3학년 (초등 수료반)',
+        chapter: '제2장. 보풀의 심연과 지워진 이름표',
+        location: '📍 캠퍼스 지하 출입금지 구역',
+        bg: 'radial-gradient(circle at 50% 30%, #272042 0%, #110e21 75%, #070510 100%)',
+        weather: 'none',
+        lines: [
+          { speaker: '나레이션', tag: '주인력 37년 · 3학년 진급 시험 전날 밤', center: null, text: '어느덧 3학년이 된 라벤더, 밀크티, 페퍼민트, 잉크 4인방. 그들은 한밤중에 9학년 선배들이 몰래 드나드는 지하 비밀 통로를 추적하다 출입금지 구역 <보풀의 심연>에 떨어졌다.' },
+          { speaker: '페퍼민트', tag: '솔라리스 3학년', center: 'peppermint', left: 'ink', text: '계산이 틀릴 리 없어! 지도에 표기되지 않은 지하 공간의 용적률이 본관의 3배나 된다고. 대체 뭘 숨기고 있는 거지?' },
+          { speaker: '잉크', tag: '녹턴 3학년', center: 'ink', right: 'milktea', text: '……다들 발밑 조심해. 이건 단순한 폐기 솜이 아니야. 마력이 완전히 빠져나가 죽어버린 코튼들의 시체 더미다.' },
+          { speaker: '밀크티', tag: '루나 3학년', center: 'milktea', left: 'lavender', text: '으으, 무서워…… 어? 라벤더, 저기 구석에 있는 하얀 솜뭉치 안쪽에 금색 이름표가 꿰매어져 있어!' },
+          { speaker: '라벤더', tag: '제피르 3학년', center: 'lavender', right: 'peppermint', text: '이 이름은…… <아르카디아>?! 2년 전에 수석으로 졸업해서 인간 세상의 별이 되었다던 전설의 선배님이잖아!' },
+          { speaker: '페퍼민트', tag: '솔라리스 3학년', center: 'peppermint', left: 'lavender', text: '말도 안 돼! 확률 0%야! 인간 세상으로 떠났다던 역대 명예 졸업생들의 명찰이 전부 여기 버려진 솜뭉치 속에 꿰매어져 있다고?!' }
+        ],
+        choice: {
+          prompt: '충격적인 위인들의 무덤 앞에서 라벤더의 선택은?',
+          options: [
+            { text: '"캐모마일 선배에게 직접 가서 진실을 물어보자!"', res: 5, dev: 15, rev: -5, reply: '페퍼민트는 미쳤냐고 말렸지만, 너는 캐모마일 회장의 선한 눈동자 뒤에 숨겨진 고뇌를 믿어보기로 했다.' },
+            { text: '"학교가 우리를 속였어! 벨라돈나 선생님께 이 명찰을 보여주자."', res: 5, dev: -5, rev: 15, reply: '잉크가 조용히 고개를 끄덕였다. "그래, 양호실의 그 사람이라면 이 붉은 실밥의 정체도 알고 있겠지."' },
+            { text: '"일단 우리 넷만의 비밀로 묻어두고 주인님의 상태부터 살피자."', res: 15, dev: 5, rev: 5, reply: '너는 차가워진 솜뭉치들을 은색 옷핀으로 정성껏 꿰매어 주며 조용히 눈물을 닦았다.' }
+          ]
+        }
+      },
+
+      // --- [5학년: 중등 과정 & 잔혹한 진실 폭로] ---
+      {
+        id: 'g5_truth',
+        grade: '5학년 (중등 방직반)',
+        chapter: '제3장. 꿈을 훔치는 기생충',
+        location: '📍 중앙 시계탑 광장',
+        bg: 'radial-gradient(circle at 50% 20%, #4c1d3d 0%, #1e132c 70%, #0d0814 100%)',
+        weather: 'none',
+        lines: [
+          { speaker: '나레이션', tag: '주인력 38년 · 주인의 깊은 우울기', center: null, text: '5학년이 된 해, 솜니아의 하늘은 잿빛으로 변했다. 현실의 주인이 심각한 우울증과 불면증에 빠지면서 눈물 호수가 범람하기 시작한 것이다.' },
+          { speaker: '벨라돈나', tag: '혁명파 수장 · 영원한 밤의 교단', center: 'belladonna', right: 'camomile', text: '불쌍한 어린 솜들아, 이제 그만 거짓된 자장가에서 깨어나라! 이 학원은 너희를 키워서 주인에게 잡아먹히게 만드는 도살장이었다!' },
+          { speaker: '캐모마일', tag: '헌신파 리더 · 순백의 수호단', center: 'camomile', left: 'belladonna', text: '그만하십시오, 벨라돈나 선생! 학생들이 진실을 알면 감당하지 못합니다!' },
+          { speaker: '벨라돈나', tag: '혁명파 수장', center: 'belladonna', left: 'lavender', text: '감당해야지! 들어라, 코튼들아! 우리가 자아를 얻어 살아 숨 쉬기 위해, 우리는 매일 밤 주인의 행복한 기억과 희망을 뜯어먹고 있었다! 그래서 주인이 우울증에 걸린 것이다!' },
+          { speaker: '캐모마일', tag: '헌신파 리더', center: 'camomile', right: 'lavender', text: '……맞습니다. 그렇기에 9학년 졸업식 날, 우리는 스스로 영혼을 반납하고 한낱 솜뭉치로 돌아가 주인님을 살리는 것입니다. 주인이 무너지면 우리 세계도 사라지니까요!' },
+          { speaker: '벨라돈나', tag: '혁명파 수장', center: 'belladonna', right: 'lavender', text: '웃기지 마라! 어떻게 얻은 생명인데 왜 소멸해야 하지?! 차라리 주인을 영원한 잠(코마)에 가두고, 우리가 이 낙원의 주인이 되자!' }
+        ],
+        choice: {
+          prompt: '광장이 두 쪽으로 갈라졌다! 5학년 라벤더는 누구의 손을 잡을 것인가?',
+          options: [
+            { text: '🤍 캐모마일 편에 선다: "주인님이 무너지면 우리도 끝이야. 우리가 돌려드려야 해."', res: 10, dev: 25, rev: -10, reply: '캐모마일이 울먹이며 네 손을 맞잡았다. "고맙다, 라벤더…… 가장 고통스럽지만 고귀한 길이다."' },
+            { text: '🖤 벨라돈나 편에 선다: "밀크티도, 페퍼민트도 죽게 둘 순 없어! 우리는 살아남아야 해!"', res: 5, dev: -10, rev: 25, reply: '벨라돈나가 환희에 찬 웃음을 터뜨렸다. "그래! 그 텅 빈 눈동자라면 주인의 꿈을 영원히 지배할 수 있어!"' },
+            { text: '💜 둘 다 거부한다: "소멸도, 기생도 틀렸어! 주인님께 새로운 희망의 꿈을 만들어 드릴 거야!"', res: 25, dev: 10, rev: 10, reply: '네 은색 옷핀이 눈부신 보랏빛으로 공명했다. 페퍼민트와 잉크, 밀크티가 일제히 네 곁으로 모여들었다!' }
+          ]
+        }
+      },
+
+      // --- [7학년: 고등 과정 & 4대 기숙사 내전] ---
+      {
+        id: 'g7_war',
+        grade: '7학년 (고등 수호반)',
+        chapter: '제4장. 찢어진 실밥들의 내전',
+        location: '📍 루나 호수와 솔라리스 요새 경계선',
+        bg: 'radial-gradient(circle at 50% 25%, #3b1838 0%, #191530 70%, #090712 100%)',
+        weather: 'rain',
+        lines: [
+          { speaker: '나레이션', tag: '주인력 39년 · 캠퍼스 전면 내전', center: null, text: '7학년이 되었을 때, 그랜드 퀼트는 완전히 두 동강 났다. 루나와 제피르의 순백 수호단, 그리고 솔라리스와 녹턴을 장악한 영원한 밤의 교단이 매일 밤 마력 실타래를 엮어 충돌했다.' },
+          { speaker: '페퍼민트', tag: '솔라리스 7학년', center: 'peppermint', left: 'lavender', text: '계산 불가야……! 벨라돈나 교단이 금지된 악몽 마법을 폭주시켜서 현실 주인님의 뇌파가 코마(혼수상태) 직전까지 떨어졌어!' },
+          { speaker: '잉크', tag: '녹턴 7학년', center: 'ink', right: 'lavender', text: '재단 가위로 결계를 계속 잘라내고 있지만 한계다. 벨라돈나의 소매에 있던 붉은 실밥…… 그녀는 원래 주인님이 어릴 때 버린 애착 인형에서 건너온 원혼이었어!' },
+          { speaker: '밀크티', tag: '루나 7학년', center: 'milktea', left: 'lavender', text: '라벤더, 네 눈동자가 빛나고 있어! 주인님 방에서 가족들이 울면서 베개를 버리려고 하고 있대……! 이대로면 솜니아 전체가 소멸해!' },
+          { speaker: '라벤더', tag: '제피르 7학년', center: 'lavender', text: '느껴져…… 주인님이 포기하려던 그 순간에, 아련하게 떠오른 어린 시절의 따뜻한 기억! 내 몸에 배어 있던 낯선 향수의 정체를 이제 알겠어!' }
+        ],
+        choice: {
+          prompt: '붕괴하는 전장 한복판, 7학년 라벤더의 결단은?',
+          options: [
+            { text: '내 모든 마력을 캐모마일 회장의 정화 의식에 보태 주인을 깨운다.', res: 10, dev: 25, rev: 0, reply: '하얀 실타래가 하늘을 뒤덮으며 주인의 악몽을 정화하기 시작했다!' },
+            { text: '벨라돈나의 코마 결계를 역이용해 솜니아의 방어막을 극대화한다.', res: 5, dev: 0, rev: 25, reply: '검보랏빛 결계가 캠퍼스를 감싸며 외부의 모든 간섭을 차단했다!' },
+            { text: '4인방의 방직 마법을 하나로 엮어 주인에게 보낼 "새로운 꿈의 씨앗"을 짠다.', res: 30, dev: 10, rev: 10, reply: '은색 옷핀, 티스푼, 컴퍼스, 재단 가위가 한데 맞물려 기적의 무지개 실타래가 탄생했다!' }
+          ]
+        }
+      },
+
+      // --- [9학년: 대망의 졸업식 & 멀티 엔딩 분기] ---
+      {
+        id: 'g9_graduation',
+        grade: '9학년 (졸업반)',
+        chapter: '최종장. 드림캐처 첨탑의 졸업식',
+        location: '📍 중앙 본관 최상층 · 드림캐처 첨탑',
+        bg: 'radial-gradient(circle at 50% 20%, #4f3b78 0%, #1d183b 65%, #0c0a1a 100%)',
+        weather: 'none',
+        lines: [
+          { speaker: '나레이션', tag: '주인력 40년 · 운명의 졸업식 밤', center: null, text: '마침내 9학년 졸업의 밤. 4년간의 기나긴 내전 끝에, 라벤더와 친구들은 중앙 본관 최상층 <드림캐처 첨탑>에 올랐다.' },
+          { speaker: '캐모마일', tag: '9학년 총학생회장', center: 'camomile', right: 'belladonna', text: '……여기까지 왔구나, 라벤더. 이제 주인님의 아침이 밝아오고 있다. 마지막 선택을 내릴 시간이야.' },
+          { speaker: '벨라돈나', tag: '혁명파 수장', center: 'belladonna', left: 'camomile', text: '그 텅 빈 눈동자에는 주인님이 가장 사랑했던 사람의 향기와 기억이 담겨 있지. 자, 어떻게 할 테냐? 영원한 꿈의 신이 될 테냐, 아니면 한낱 솜뭉치로 사라질 테냐?' },
+          { speaker: '밀크티 & 페퍼민트 & 잉크', tag: '9학년 동기 일동', center: 'lavender', text: '라벤더, 네가 어떤 선택을 하든 우리는 마지막 실밥이 풀릴 때까지 너와 함께할게!' }
+        ],
+        choice: {
+          prompt: '9학년 졸업식, 드림캐처 앞에 선 라벤더의 마지막 선택은?',
+          options: [
+            { text: '🤍 [헌신 엔딩] 나의 꿈 조각을 주인에게 돌려드리고 평범한 솜으로 돌아간다.', res: 0, dev: 30, rev: 0, triggerEnding: 'ending_devotion' },
+            { text: '🖤 [혁명 엔딩] 주인을 영원한 안식의 꿈속에 모시고 솜니아의 수호신이 된다.', res: 0, dev: 0, rev: 30, triggerEnding: 'ending_revolution' },
+            { text: '💜 [진엔딩] 우리가 짠 새로운 희망의 꿈을 선물해 주인과 함께 깨어난다!', res: 30, dev: 10, rev: 10, triggerEnding: 'ending_true' }
+          ]
+        }
+      }
+    ];
+
+    const ENDINGS = {
+      ending_devotion: {
+        badge: 'ENDING A · 순백의 수호단 루트',
+        title: '🤍 순백의 자장가 (헌신 엔딩)',
+        desc: '라벤더와 9학년 졸업생들은 미소 지으며 각자의 가슴속 드림 코어를 주인에게 돌려주었습니다. 마력이 빠져나간 아이들은 다시 포근하고 아무 생각 없는 하얀 베개 솜으로 돌아갔습니다.\n\n다음 날 아침, 상쾌하게 눈을 뜬 주인은 오랜 우울증을 털어내고 햇살 아래서 베개를 따뜻하게 껴안았습니다. 말은 할 수 없지만, 베개 속 하얀 솜뭉치들은 세상에서 가장 포근한 온기로 주인의 곁을 영원히 지켜주었습니다.'
+      },
+      ending_revolution: {
+        badge: 'ENDING B · 영원한 밤의 교단 루트',
+        title: '🖤 영원한 밤의 낙원 (혁명 엔딩)',
+        desc: '라벤더는 드림캐처의 시계바늘을 영원히 새벽 3시 33분에 고정시켰습니다. 현실의 주인은 고통스러운 현실 대신, 솜니아의 요정들이 엮어주는 가장 달콤하고 행복한 꿈속에서 영원한 잠에 빠져들었습니다.\n\n그랜드 퀼트의 불빛은 꺼지지 않았고, 라벤더와 친구들은 영원히 사라지지 않는 불멸의 꿈의 수호신이 되어 주인의 곁을 지켰습니다.'
+      },
+      ending_true: {
+        badge: 'TRUE ENDING · 공명과 공존 루트',
+        title: '💜 새벽을 여는 공명 (진엔딩)',
+        desc: '라벤더의 텅 빈 눈동자에서 주인이 잊고 있던 소중한 사람의 따뜻한 기억이 피어올랐습니다. 코튼들은 주인의 꿈을 빼앗는 대신, 4년간 엮어낸 희망과 용기의 실타래를 아침 햇살에 실어 주인에게 선물했습니다.\n\n기적처럼 눈을 뜬 주인은 다시 살아갈 힘을 얻었고, 매일 밤 잠들 때마다 베개 속 솜니아 친구들과 꿈속에서 다시 만날 수 있게 되었습니다. 소멸도 기생도 아닌, 새로운 꿈의 법칙이 시작된 것입니다!'
+      }
+    };
+
+    // ==========================================
+    // 4. 게임 상태 관리 & 컨트롤러
+    // ==========================================
+    let state = {
+      sceneIdx: 0,
+      lineIdx: 0,
+      phase: 'lines', // 'lines' | 'afterLines' | 'choice' | 'choiceReply'
+      resonance: 20,
+      devotion: 10,
+      revolution: 10,
+      backlog: [],
+      isTyping: false,
+      typingTimer: null,
+      fullText: ''
+    };
+
+    function renderChapterList() {
+      const container = document.getElementById('chapter-list');
+      container.innerHTML = SCENES.map((s, idx) => `
+        <button onclick="jumpToScene(${idx})" class="w-full text-left p-3 rounded-xl bg-purple-950/70 hover:bg-purple-800/80 border border-amber-300/30 flex items-center justify-between transition cursor-pointer">
+          <div>
+            <span class="text-xs font-bold text-amber-300">${s.grade}</span>
+            <div class="font-bold text-sm text-white">${s.chapter}</div>
+          </div>
+          <span class="text-xs text-purple-300">이동 ➔</span>
+        </button>
+      `).join('');
+    }
+
+    function startGame(sceneIndex = 0) {
+      document.getElementById('title-screen').classList.add('hidden');
+      document.getElementById('game-screen').classList.remove('hidden');
+      document.getElementById('ending-modal').classList.add('hidden');
+      state.resonance = 20;
+      state.devotion = 10;
+      state.revolution = 10;
+      state.backlog = [];
+      updateStatsUI();
+      loadScene(sceneIndex);
+    }
+
+    function jumpToScene(idx) {
+      document.getElementById('chapter-modal').classList.add('hidden');
+      document.getElementById('title-screen').classList.add('hidden');
+      document.getElementById('game-screen').classList.remove('hidden');
+      document.getElementById('ending-modal').classList.add('hidden');
+      loadScene(idx);
+    }
+
+    function loadScene(idx) {
+      state.sceneIdx = idx;
+      state.lineIdx = 0;
+      state.phase = 'lines';
+
+      const scene = SCENES[idx];
+      document.getElementById('hud-grade').textContent = scene.grade;
+      document.getElementById('hud-chapter').textContent = scene.chapter;
+      document.getElementById('hud-location').textContent = scene.location;
+      document.getElementById('bg-layer').style.background = scene.bg;
+      setWeather(scene.weather);
+
+      document.getElementById('choice-container').classList.add('hidden');
+      document.getElementById('choice-container').innerHTML = '';
+      renderCurrentLine();
+    }
+
+    function setWeather(type) {
+      const overlay = document.getElementById('weather-overlay');
+      if (type === 'rain') {
+        overlay.className = 'absolute inset-0 tear-rain-overlay opacity-80 transition-opacity duration-700';
+      } else {
+        overlay.className = 'absolute inset-0 opacity-0 transition-opacity duration-700';
+      }
+    }
+
+    function renderStageSprites(line) {
+      const slots = ['left', 'center', 'right'];
+      slots.forEach(slot => {
+        const el = document.getElementById(`stage-${slot}`);
+        const charKey = line[slot];
+        if (charKey && CHARACTER_SVGS[charKey]) {
+          el.innerHTML = CHARACTER_SVGS[charKey];
+          el.classList.remove('opacity-0');
+          el.classList.add('opacity-100');
+        } else {
+          el.innerHTML = '';
+          el.classList.remove('opacity-100');
+          el.classList.add('opacity-0');
+        }
+      });
+    }
+
+    function typeWriterText(text) {
+      clearInterval(state.typingTimer);
+      const textEl = document.getElementById('dialogue-text');
+      state.fullText = text;
+      state.isTyping = true;
+      textEl.textContent = '';
+      let i = 0;
+      state.typingTimer = setInterval(() => {
+        if (i < text.length) {
+          textEl.textContent += text.charAt(i);
+          if (i % 3 === 0) playTone(620 + Math.random() * 140, 0.05, 0.015, 'triangle');
+          i++;
+        } else {
+          clearInterval(state.typingTimer);
+          state.isTyping = false;
+        }
+      }, 22);
+    }
+
+    function renderCurrentLine() {
+      const scene = SCENES[state.sceneIdx];
+      let lineObj = null;
+
+      if (state.phase === 'lines') {
+        lineObj = scene.lines[state.lineIdx];
+      } else if (state.phase === 'afterLines') {
+        lineObj = scene.afterLines[state.lineIdx];
+      }
+
+      if (!lineObj) return;
+
+      if (lineObj.weather) setWeather(lineObj.weather);
+      renderStageSprites(lineObj);
+
+      document.getElementById('speaker-name').textContent = lineObj.speaker;
+      document.getElementById('speaker-tag').textContent = lineObj.tag || '';
+      document.getElementById('next-indicator').classList.remove('hidden');
+
+      state.backlog.push({ grade: scene.grade, speaker: lineObj.speaker, text: lineObj.text });
+      typeWriterText(lineObj.text);
+    }
+
+    function nextDialogue() {
+      // 타이핑 중이면 즉시 전체 문장 완성
+      if (state.isTyping) {
+        clearInterval(state.typingTimer);
+        document.getElementById('dialogue-text').textContent = state.fullText;
+        state.isTyping = false;
+        return;
+      }
+
+      playTone(740, 0.12, 0.03);
+      const scene = SCENES[state.sceneIdx];
+
+      if (state.phase === 'lines') {
+        state.lineIdx++;
+        if (state.lineIdx < scene.lines.length) {
+          renderCurrentLine();
+        } else if (scene.afterLines && scene.afterLines.length > 0) {
+          state.phase = 'afterLines';
+          state.lineIdx = 0;
+          renderCurrentLine();
+        } else {
+          showChoices(scene.choice);
+        }
+      } else if (state.phase === 'afterLines') {
+        state.lineIdx++;
+        if (state.lineIdx < scene.afterLines.length) {
+          renderCurrentLine();
+        } else {
+          showChoices(scene.choice);
+        }
+      } else if (state.phase === 'choiceReply') {
+        // 다음 학년 챕터로 진행
+        if (state.sceneIdx + 1 < SCENES.length) {
+          loadScene(state.sceneIdx + 1);
+        }
+      }
+    }
+
+    function showChoices(choiceData) {
+      state.phase = 'choice';
+      document.getElementById('next-indicator').classList.add('hidden');
+      const container = document.getElementById('choice-container');
+      container.classList.remove('hidden');
+      container.classList.add('flex');
+
+      container.innerHTML = `
+        <div class="text-center text-xs sm:text-sm font-bold text-amber-200 bg-slate-950/90 py-1.5 px-4 rounded-full border border-amber-400/40 mb-1">
+          ✨ ${choiceData.prompt}
+        </div>
+        ${choiceData.options.map((opt, idx) => `
+          <button onclick="selectChoice(${idx})" class="crk-button w-full text-left px-5 py-3.5 rounded-2xl text-sm sm:text-base text-white font-medium hover:text-amber-200 cursor-pointer">
+            ${opt.text}
+          </button>
+        `).join('')}
+      `;
+    }
+
+    function selectChoice(optIdx) {
+      playTone(880, 0.25, 0.05);
+      const scene = SCENES[state.sceneIdx];
+      const opt = scene.choice.options[optIdx];
+
+      state.resonance = Math.max(0, Math.min(100, state.resonance + (opt.res || 0)));
+      state.devotion = Math.max(0, Math.min(100, state.devotion + (opt.dev || 0)));
+      state.revolution = Math.max(0, Math.min(100, state.revolution + (opt.rev || 0)));
+      updateStatsUI();
+
+      // 변동 알림 토스트
+      const changes = [];
+      if (opt.res) changes.push(`💜 공명도 ${opt.res > 0 ? '+' : ''}${opt.res}%`);
+      if (opt.dev) changes.push(`🤍 헌신 ${opt.dev > 0 ? '+' : ''}${opt.dev}`);
+      if (opt.rev) changes.push(`🖤 혁명 ${opt.rev > 0 ? '+' : ''}${opt.rev}`);
+      if (changes.length > 0) showStatToast(changes.join('  |  '));
+
+      const container = document.getElementById('choice-container');
+      container.classList.add('hidden');
+      container.classList.remove('flex');
+
+      if (opt.triggerEnding) {
+        triggerEnding(opt.triggerEnding);
+        return;
+      }
+
+      state.phase = 'choiceReply';
+      document.getElementById('speaker-name').textContent = '선택의 결과';
+      document.getElementById('speaker-tag').textContent = scene.grade;
+      document.getElementById('next-indicator').classList.remove('hidden');
+      state.backlog.push({ grade: scene.grade, speaker: '선택 결과', text: opt.reply });
+      typeWriterText(opt.reply);
+    }
+
+    function updateStatsUI() {
+      document.getElementById('val-resonance').textContent = `${state.resonance}%`;
+      document.getElementById('bar-resonance').style.width = `${state.resonance}%`;
+
+      document.getElementById('val-devotion').textContent = state.devotion;
+      document.getElementById('bar-devotion').style.width = `${Math.min(100, state.devotion * 1.2)}%`;
+
+      document.getElementById('val-revolution').textContent = state.revolution;
+      document.getElementById('bar-revolution').style.width = `${Math.min(100, state.revolution * 1.2)}%`;
+    }
+
+    function showStatToast(msg) {
+      const toast = document.getElementById('stat-toast');
+      toast.textContent = msg;
+      toast.classList.remove('opacity-0');
+      toast.classList.add('opacity-100');
+      setTimeout(() => {
+        toast.classList.remove('opacity-100');
+        toast.classList.add('opacity-0');
+      }, 2200);
+    }
+
+    function triggerEnding(endingKey) {
+      const endData = ENDINGS[endingKey];
+      document.getElementById('ending-badge').textContent = endData.badge;
+      document.getElementById('ending-title').textContent = endData.title;
+      document.getElementById('ending-desc').innerHTML = endData.desc.replace(/\n/g, '<br/>');
+      document.getElementById('end-res').textContent = `${state.resonance}%`;
+      document.getElementById('end-dev').textContent = state.devotion;
+      document.getElementById('end-rev').textContent = state.revolution;
+      document.getElementById('ending-modal').classList.remove('hidden');
+    }
+
+    function restartToTitle() {
+      document.getElementById('ending-modal').classList.add('hidden');
+      document.getElementById('game-screen').classList.add('hidden');
+      document.getElementById('title-screen').classList.remove('hidden');
+    }
+
+    function closeEndingAndJump() {
+      document.getElementById('ending-modal').classList.add('hidden');
+      toggleChapterModal();
+    }
+
+    function toggleChapterModal() {
+      const modal = document.getElementById('chapter-modal');
+      modal.classList.toggle('hidden');
+    }
+
+    function toggleBacklog() {
+      const modal = document.getElementById('backlog-modal');
+      modal.classList.toggle('hidden');
+      if (!modal.classList.contains('hidden')) {
+        const content = document.getElementById('backlog-content');
+        content.innerHTML = state.backlog.map(item => `
+          <div class="p-3 rounded-xl bg-white/5 border border-white/10">
+            <div class="text-xs text-amber-300 font-bold mb-1">[${item.grade}] ${item.speaker}</div>
+            <div class="font-story text-slate-200">${item.text}</div>
+          </div>
+        `).join('');
+        content.scrollTop = content.scrollHeight;
+      }
+    }
+
+    // 스페이스바 / 엔터키로 대화 진행 지원
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' || e.code === 'Enter') {
+        const gameVisible = !document.getElementById('game-screen').classList.contains('hidden');
+        const noModal = document.getElementById('ending-modal').classList.contains('hidden') &&
+                        document.getElementById('chapter-modal').classList.contains('hidden') &&
+                        document.getElementById('backlog-modal').classList.contains('hidden');
+        if (gameVisible && noModal && state.phase !== 'choice') {
+          e.preventDefault();
+          nextDialogue();
+        }
+      }
+    });
+  </script>
+</body>
+</html>

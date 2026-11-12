@@ -1,0 +1,20 @@
+{
+  "name": "somnia-dream-academy",
+  "version": "1.0.0",
+  "description": "솜니아: 드림 아카데미",
+  "main": "main.js",
+  "scripts": {
+    "build": "electron-builder --win portable"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.somnia.dreamacademy",
+    "productName": "Somnia_Dream_Academy",
+    "win": {
+      "target": "portable"
+    }
+  }
+}
